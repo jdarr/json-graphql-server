@@ -19,7 +19,7 @@ import { getRelatedType } from '../nameConverter';
 
 /**
  * Get a GraphQL schema from data
- * 
+ *
  * @example
  * const data = {
  *    "posts": [
@@ -101,7 +101,7 @@ export default data => {
                     id: { type: new GraphQLNonNull(GraphQLID) },
                 },
             };
-            fields[`all${camelize(pluralize(type.name))}`] = {
+            fields[`${pluralize(type.name)}`] = {
                 type: new GraphQLList(typesByName[type.name]),
                 args: {
                     page: { type: GraphQLInt },
@@ -127,18 +127,19 @@ export default data => {
         name: 'Mutation',
         fields: types.reduce((fields, type) => {
             const typeFields = typesByName[type.name].getFields();
-            const nullableTypeFields = Object.keys(
-                typeFields
-            ).reduce((f, fieldName) => {
-                f[fieldName] = Object.assign({}, typeFields[fieldName], {
-                    type:
-                        fieldName !== 'id' &&
-                        typeFields[fieldName].type instanceof GraphQLNonNull
-                            ? typeFields[fieldName].type.ofType
-                            : typeFields[fieldName].type,
-                });
-                return f;
-            }, {});
+            const nullableTypeFields = Object.keys(typeFields).reduce(
+                (f, fieldName) => {
+                    f[fieldName] = Object.assign({}, typeFields[fieldName], {
+                        type:
+                            fieldName !== 'id' &&
+                            typeFields[fieldName].type instanceof GraphQLNonNull
+                                ? typeFields[fieldName].type.ofType
+                                : typeFields[fieldName].type,
+                    });
+                    return f;
+                },
+                {}
+            );
             fields[`create${type.name}`] = {
                 type: typesByName[type.name],
                 args: typeFields,
@@ -164,7 +165,7 @@ export default data => {
 
     /**
      * extend schema to add relationship fields
-     * 
+     *
      * @example
      * If the `post` key contains a 'user_id' field, then
      * add one-to-many and many-to-one type extensions:
