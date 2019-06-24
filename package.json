@@ -54,6 +54,7 @@
         "webpack-cli": "~3.3.4"
     },
     "dependencies": {
+        "@babel/runtime": "~7.4.5",
         "apollo-client": "~2.6.3",
         "apollo-test-utils": "~0.3.2",
         "cors": "^2.8.4",
